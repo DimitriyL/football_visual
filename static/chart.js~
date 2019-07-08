@@ -1,0 +1,35 @@
+var chart = document.getElementsByClassName("progress");
+var scoreTable = document.getElementById("main");
+var avgs = document.getElementById("franchiseAvgs");
+var chartValue = parseInt(document.getElementById("statSelect").value);
+var toggleButt = document.getElementById("toggle");
+
+var display = function(value){
+    var pct0 = parseFloat(avgs.getElementsByTagName("tr")[0].getElementsByTagName("td")[value].innerText);
+    var pct5 = parseFloat(avgs.getElementsByTagName("tr")[1].getElementsByTagName("td")[value].innerText);
+    var pct15 = parseFloat(avgs.getElementsByTagName("tr")[2].getElementsByTagName("td")[value].innerText);
+    var pct50 = parseFloat(avgs.getElementsByTagName("tr")[3].getElementsByTagName("td")[value].innerText);
+    
+    var own = parseFloat(scoreTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr")[value].getElementsByTagName("td")[2].innerText);
+    
+    chart[0].getElementsByTagName("div")[0].innerText = "Stat Score: " + own;
+    chart[1].getElementsByTagName("div")[0].innerText = "Franchise QB Average: " + pct50;
+    chart[2].getElementsByTagName("div")[0].innerText = "Franchise QB 15th Percentile: " + pct15;
+    chart[3].getElementsByTagName("div")[0].innerText = "Franchise QB 5th Percentile: " + pct5;
+    chart[4].getElementsByTagName("div")[0].innerText = "Franchise QB Minimum: " + pct0;
+    
+    
+    chart[0].getElementsByTagName("div")[0].style.width = "" + ((own / 150.0) * 100) + "%";
+    chart[1].getElementsByTagName("div")[0].style.width = "" + ((pct50 / 150.0) * 100) + "%";
+    chart[2].getElementsByTagName("div")[0].style.width = "" + ((pct15 / 150.0) * 100) + "%";
+    chart[3].getElementsByTagName("div")[0].style.width = "" + ((pct5 / 150.0) * 100) + "%";
+    chart[4].getElementsByTagName("div")[0].style.width = "" + ((pct0 / 150.0) * 100) + "%";
+}
+
+var runFxn = function(e){
+    display(parseInt(document.getElementById("statSelect").value));
+}
+
+display(parseInt(document.getElementById("statSelect").value));
+
+toggleButt.addEventListener("click", runFxn);

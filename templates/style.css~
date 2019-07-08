@@ -1,0 +1,7 @@
+table {
+    width: 20em;
+}
+
+tr:nth-child(1) {
+    background-color: #0f0;
+}

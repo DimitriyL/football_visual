@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+    <title>Scorecard for {{First}} {{Last}}</title>
+  
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td, th {
+        border: 1px solid black;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(1), tr:nth-child(9), tr:nth-child(10) {
+        background-color: #dddddd
+      }
+
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+
+        
+        var track1 = 2;
+          $('#main tr td:nth-child(3)').each(
+	    function(){
+              var minimum = $('#franchiseAvgs tr:nth-child(3) td:nth-child(' + track1 + ')').text();
+	      var score = $(this).text();
+	      if(parseFloat(score) < parseFloat(minimum)){
+                $(this).css("background-color", "yellow");
+              }
+              track1 += 1;
+	    }
+	  );
+
+        var track2 = 2;
+          $('#main tr td:nth-child(3)').each(
+	    function(){
+              var minimum = $('#franchiseAvgs tr:nth-child(2) td:nth-child(' + track2 + ')').text();
+	      var score = $(this).text();
+	      if(parseFloat(score) < parseFloat(minimum)){
+                $(this).css("background-color", "orange");
+              }
+              track2 += 1;
+	    }
+	  );
+
+        var track3 = 2;
+          $('#main tr td:nth-child(3)').each(
+	    function(){
+              var minimum = $('#franchiseAvgs tr:nth-child(1) td:nth-child(' + track3 + ')').text();
+	      var score = $(this).text();
+	      if(parseFloat(score) < parseFloat(minimum)){
+                $(this).css("background-color", "red");
+              }
+              track3 += 1;
+	    }
+	  );
+        
+
+      });
+
+    </script>
+			   
+
+  </head>
+
+  <body>
+    <h1>{{First}} {{Last}} Production Scorecard</h1>
+    Franchise QB: {{FranchiseQB}}<br><br>
+
+    <table id="main">
+      <tr>
+	<th>Stat</th><th>Stat Value:</th><th>Production Score:</th>
+      </tr>
+      <tr>
+	<td>Completion Percentage</td><td>{{CompPct}}</td><td>{{CompPctScore}}</td>
+      </tr>
+      <tr>
+	<td>Yards Per Attempt</td><td>{{YardsPerAtt}}</td><td>{{YardsPerAttScore}}</td>
+      </tr>
+      <tr>
+	<td>TD:INT Ratio</td><td>{{TDtoINT}}</td><td>{{TDtoINTScore}}</td>
+      </tr>
+      <tr>
+	<td>Adjusted Yards Per Attempt</td><td>{{AYPerA}}</td><td>{{AYPerAScore}}</td>
+      </tr>
+      <tr>
+	<td>Passer Rating</td><td>{{NFLRating}}</td><td>{{NFLRatingScore}}</td>
+      </tr>
+      <tr>
+	<td>Touchdown Percentage</td><td>{{TDPct}}</td><td>{{TDPctScore}}</td>
+      </tr>
+      <tr>
+	<td>Interception Percentage</td><td>{{INTPct}}</td><td>{{INTPctScore}}</td>
+      </tr>
+      <tr>
+	<td colspan = "2">Average of Scores</td><td style="display:none;"></td><td>{{AllSeven}}</td>
+      </tr>
+      <tr>
+	<td colspan = "2">Average of Completion Percentage, Yards Per Attempt, and TD:INT Ratio</td><td style="display:none;"></td><td>{{FirstThree}}</td>
+      </tr>
+    </table>
+
+    <br><br>
+
+    <table style="display:none;" id="franchiseAvgs">
+      {% for row in averages %}
+      <tr style="border:1px solid black;">
+	{% for item in row %}
+	<td style="border:1px solid black;"> {{ item }} </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+
+    <br>
+
+    <select id="statSelect">
+      <option value="1">Completion Percentage</option>
+      <option value="2">Yards Per Attempt</option>
+      <option value="3">TD:INT Ratio</option>
+      <option value="4">Adjusted Yards Per Attempt</option>
+      <option value="5">Passer Rating</option>
+      <option value="6">TD Percentage</option>
+      <option value="7">INT Percentage</option>
+      <option value="8">Average of Scores</option>
+      <option value="9">Average of Comp %, YPA, and TD:INT Ratio</option>
+    </select>
+    <br><br>
+
+    <button type="button" id="toggle">Change Stat</button><br><br>
+    
+    <h3>Visual Representation:</h3><br>
+
+    <br>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="150">{{Last}}</div>
+    </div><br>
+    <div class="progress">
+      <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="150">Franchise QB Average</div>
+    </div><br>
+    <div class="progress">
+      <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="150">Franchise QB 15th Percentile</div>
+    </div><br>
+    <div class="progress">
+      <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="150">Franchise QB 5th Percentile</div>
+    </div><br>
+    <div class="progress">
+      <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="150">Franchise QB Minimum</div>
+    </div><br>
+
+    <script src="static/chart.js"> </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,249 @@
+import sqlite3, sys, csv
+import numpy as np
+
+db_name = "draftQbs.db"
+db = sqlite3.connect(db_name)
+cur = db.cursor();
+
+def init():
+    cur.execute("CREATE TABLE QB (Year INTEGER, Round INTEGER, Pick INTEGER, First TEXT, Last TEXT, Team TEXT, College TEXT, Conference TEXT, Completions INTEGER, Attempts INTEGER, CompPct NUMERIC, Yards INTEGER, YardsPerAtt NUMERIC, TD INTEGER, INT INTEGER, TDtoINTRatio NUMERIC, AYperA NUMERIC, NFLRating NUMERIC, TDPct NUMERIC, INTPct NUMERIC, FranchiseQB TEXT, CompPctScore NUMERIC, YardsPerAttScore NUMERIC, TDtoINTScore NUMERIC, AYperAScore NUMERIC, NFLRatingScore NUMERIC, TDPctScore NUMERIC, INTPctScore NUMERIC, GeoMean NUMERIC, GeoFirstThree NUMERIC, Id INTEGER);")
+
+    cur.execute("CREATE TABLE AVGS (Percentile INTEGER, CompPctScore NUMERIC, YardsPerAttScore NUMERIC, TDtoINTScore NUMERIC, AYperAScore NUMERIC, NFLRatingScore NUMERIC, TDPctScore NUMERIC, INTPctScore NUMERIC, GeoMean NUMERIC, GeoFirstThree NUMERIC);")
+
+    insert0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    insert5 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+    insert15 = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+    insert50 = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
+    cur.execute("INSERT INTO AVGS (Percentile, CompPctScore, YardsPerAttScore, TDtoINTScore, AYperAScore, NFLRatingScore, TDPctScore, INTPctScore, GeoMean, GeoFirstThree) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", insert0)
+    cur.execute("INSERT INTO AVGS (Percentile, CompPctScore, YardsPerAttScore, TDtoINTScore, AYperAScore, NFLRatingScore, TDPctScore, INTPctScore, GeoMean, GeoFirstThree) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", insert5)
+    cur.execute("INSERT INTO AVGS (Percentile, CompPctScore, YardsPerAttScore, TDtoINTScore, AYperAScore, NFLRatingScore, TDPctScore, INTPctScore, GeoMean, GeoFirstThree) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", insert15)
+    cur.execute("INSERT INTO AVGS (Percentile, CompPctScore, YardsPerAttScore, TDtoINTScore, AYperAScore, NFLRatingScore, TDPctScore, INTPctScore, GeoMean, GeoFirstThree) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", insert50)
+    
+    f = open("draftQbs.csv", "rU")
+    reader = csv.reader(f)
+    
+    qbid = 0
+    for row in reader:
+    #print row[0]
+    #print row[6]
+        to_db = [str(row[0]), str(row[1]), str(row[2]), str(row[3]), str(row[4]), str(row[5]), str(row[6]), str(row[7]), str(row[8]), str(row[9]), str(row[10]), str(row[11]), str(row[12]), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[17]), str(row[18]), str(row[19]), str(row[20]), "CompPctScore", "YardsPerAttScore", "TDtoINTScore", "AYPerAScore", "NFLRatingScore", "TDPctScore", "INTPctScore", "GeoMean", "GeoFirstThree", qbid]
+        qbid += 1
+        
+        cur.execute("INSERT INTO QB (Year, Round, Pick, First, Last, Team, College, Conference, Completions, Attempts, CompPct, Yards, YardsPerAtt, TD, INT, TDtoINTRatio, AYperA, NFLRating, TDPct, INTPct, FranchiseQB, CompPctScore, YardsPerAttScore, TDtoINTScore, AYPerAScore, NFLRatingScore, TDPctScore, INTPctScore, GeoMean, GeoFirstThree, Id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", to_db)
+        
+#print to_db
+    db.commit()
+
+prodScores = []
+def addScores(indicator):
+    #cur.execute("alter table QB add column CompPctScore")
+    #cur.execute("alter table QB add column YardsPerAttScore")
+    #cur.execute("alter table QB add column TDtoINTScore")
+    #cur.execute("insert into QB (CompPctScore, YardsPerAttScore, TDtoINTScore) values (?, ?, ?)", ("CompPctScore", "YardsPerAttScore", "TDtoINTScore"))
+
+    cur.execute("SELECT * from QB;")
+    data = cur.fetchall()
+    
+    #for completion %
+    stat = "Comp%"
+    statNum = indicator;
+
+    thisRow = 1
+
+    while statNum < 20:
+        while thisRow < 263:
+            #print stat
+            ownStat = data[thisRow][statNum]
+            print("ownStat")
+            print(ownStat)
+        
+            currYear = data[thisRow][0]
+            print("currYear")
+            print(currYear)
+            cur.execute("SELECT * from QB WHERE QB.Year = " + str(currYear) + " OR QB.Year = " + str(currYear - 1) + " OR QB.Year = " + str(currYear - 2) + ";")
+            era = cur.fetchall()
+        
+            eraValues = []
+            for row in era:
+                eraValues.append(row[statNum])
+                #print eraValues
+            
+            eraSum = 0
+            for item in eraValues:
+                eraSum += item
+                eraAvg = float(eraSum) / len(eraValues)
+                #print eraAvg
+                
+            eraSquareDist = []
+            for item in eraValues:
+                squareDist = (item - eraAvg)**2
+                eraSquareDist.append(squareDist)
+            #print eraSquareDist
+
+            eraSumSD = 0
+            for item in eraSquareDist:
+                eraSumSD += item
+            eraMeanSD = float(eraSumSD) / (len(eraSquareDist)-1)
+            #print eraMeanSD
+
+            eraSdev = eraMeanSD**(0.5)
+            #print eraSdev
+
+            if statNum == 19:
+                numSdevs = (eraAvg - ownStat) / eraSdev
+            else:
+                numSdevs = (ownStat - eraAvg) / eraSdev
+            #print numSdevs
+
+            prodScore = (numSdevs * 15) + 100
+            print("PRODUCTION SCORE")
+            print(prodScore)
+            print("!!!!!!!")
+            
+            if statNum == 10:
+                cur.execute("UPDATE QB SET CompPctScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 12:
+                cur.execute("UPDATE QB SET YardsPerAttScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 15:
+                cur.execute("UPDATE QB SET TDtoINTScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 16:
+                cur.execute("UPDATE QB SET AYPerAScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 17:
+                cur.execute("UPDATE QB SET NFLRatingScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 18:
+                cur.execute("UPDATE QB SET TDPctScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+            elif statNum == 19:
+                cur.execute("UPDATE QB SET INTPctScore = ? WHERE Id = ?", (prodScore, thisRow)) 
+
+            prodScores.append(prodScore)
+            
+            thisRow += 1
+
+            #print prodScores
+
+        if statNum == 10:
+            statNum = 12
+        elif statNum == 12:
+            statNum = 15
+        elif statNum < 20:
+            statNum += 1
+
+        print(statNum)
+    
+    db.commit() 
+
+def geoMeans():
+    cur.execute("SELECT * FROM QB;")
+    data = cur.fetchall()
+
+    thisRow = 1
+    statScore = 0
+
+
+    while thisRow < 263:
+        all7 = []
+        first3 = []
+        while statScore < 7:
+            if statScore < 3:
+                first3.append(data[thisRow][statScore + 21])
+            all7.append(data[thisRow][statScore + 21])
+            statScore += 1
+
+        print(all7)
+        print(first3)
+        #inserting geomeans into the database
+        a7 = np.array(all7)
+        a3 = np.array(first3)
+        geo7 = a7.prod()**(1.0/len(all7))
+        geo3 = a3.prod()**(1.0/len(first3))
+        print(geo7)
+        print(geo3)
+
+        cur.execute("UPDATE QB SET GeoMean = ? WHERE Id = ?", (geo7, thisRow)) 
+        cur.execute("UPDATE QB SET GeoFirstThree = ? WHERE Id = ?", (geo3, thisRow)) 
+        
+        statScore = 0
+        thisRow += 1
+    
+    db.commit()
+
+def averages(score):
+    #cur.execute("CREATE TABLE AVGS (Percentile INTEGER, CompPctScore NUMERIC, YardsPerAttScore NUMERIC, TDtoINTScore NUMERIC, AYPerAScore NUMERIC, NFLRatingScore NUMERIC, TDPctScore NUMERIC, INTPctScore NUMERIC;")
+    
+    #Franchise QB 50th percentile
+    #cur.execute("SELECT * FROM QB WHERE QB.Year > 2000 AND QB.FranchiseQB ~= 'Yes';")
+    #data = cur.fetchall()
+
+    cur.execute("SELECT " + score  + " FROM QB WHERE QB.Year > 2000 AND QB.FranchiseQB == 'Yes' OR QB.FranchiseQB == 'Projected'")
+    data = cur.fetchall()
+    print(data[0][0])
+
+    elegantData = []
+    for item in data:
+        elegantData.append(item[0])
+
+    print(elegantData)
+
+    #calculating the average
+    sum = 0
+    for item in elegantData:
+        sum += item
+
+    pct50 = float(sum) / len(elegantData)
+    
+    print(pct50)
+
+    #calculating the minimum
+    pct0 = min(elegantData)
+    print(pct0)
+
+    #calculating the 5th percentile
+    a5 = np.array(elegantData)
+    pct5 = np.percentile(a5, 5)
+    print(pct5)
+
+    #calculating the 15th percentile
+    a15 = np.array(elegantData)
+    pct15 = np.percentile(a15, 15)
+    print(pct15)
+
+    #inserting into AVGS
+    insert0 = [0, pct0]
+    insert5 = [5, pct5]
+    insert15 = [15, pct15]
+    insert50 = [50, pct50]
+
+    message = "UPDATE AVGS SET " + score + " = ? WHERE Percentile = ?"
+    print(message)
+    cur.execute(message, (pct0, 0))
+    cur.execute(message, (pct5, 5))    
+    cur.execute(message, (pct15, 15))    
+    cur.execute(message, (pct50, 50))
+
+    cur.execute("SELECT * FROM AVGS;")
+    print(cur.fetchall())
+
+    #commit
+    db.commit()
+
+init()
+addScores(10)
+addScores(12)
+addScores(15)
+addScores(16)
+addScores(17)
+addScores(18)
+addScores(19)
+
+geoMeans()
+
+averages("CompPctScore")
+averages("YardsPerAttScore")
+averages("TDtoINTScore")
+averages("AYPerAScore")
+averages("NFLRatingScore")
+averages("TDPctScore")
+averages("INTPctScore")
+averages("GeoMean")
+averages("GeoFirstThree")
+

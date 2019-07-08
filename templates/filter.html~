@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Display Page</title>
+  </head>
+
+  <body>
+    <form action = "filter.html">
+      Filter
+      Year: <input type = "text" name = "year"><br>
+    </form>
+    <br><br>
+    <table>
+      {% for row in data %}
+      <tr>
+	{% for item in row %}
+	<td> {{ item }} </td>
+	{% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

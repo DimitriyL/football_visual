@@ -1,0 +1,125 @@
+var rows = document.getElementsByTagName("tr");
+var tableMain = document.getElementById("main");
+var cardForm = document.getElementById("cardForm");
+var filterSelect = document.getElementById("filterSelect");
+
+var test = function(e){
+    cardForm.childNodes[1].value = rows[1].childNodes[7].innerText
+    cardForm.childNodes[4].value = rows[1].childNodes[9].innerText
+    cardForm.submit();
+}
+
+var i;
+for(i = 1; i < 244; i++){
+    rows[i].addEventListener("click", function(i){
+	    cardForm.childNodes[1].value = this.childNodes[7].innerText;
+	    cardForm.childNodes[4].value = this.childNodes[9].innerText;
+	    cardForm.submit();	    
+	});
+}
+
+
+
+function myFunction() {
+    // Declare variables 
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = tableMain
+    tr = table.getElementsByTagName("tr");
+
+    var filterIndex;
+    if(filterSelect.value == "firstName"){
+	filterIndex = 3;
+    }
+    else if(filterSelect.value == "lastName"){
+	filterIndex = 4;
+    }
+    else if(filterSelect.value == "year"){
+	filterIndex = 0;
+    }
+    else if(filterSelect.value == "round"){
+	filterIndex = 1;
+    }
+    else if(filterSelect.value == "conference"){
+	filterIndex = 7;
+    }
+    else{
+	filterIndex = 6;
+    }
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+	td = tr[i].getElementsByTagName("td")[filterIndex];
+	if (td) {
+	    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+		tr[i].style.display = "";
+	    } else {
+		tr[i].style.display = "none";
+	    }
+	} 
+    }
+}
+
+//sorting function from w3
+function sortTable(n) {
+    var table, allRows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = tableMain;
+    switching = true;
+    // Set the sorting direction to ascending:
+    dir = "asc"; 
+    /* Make a loop that will continue until
+       no switching has been done: */
+    while (switching) {
+	// Start by saying: no switching is done:
+	switching = false;
+	allRows = document.getElementsByClassName("visible-rows");
+	/* Loop through all table rows (except the
+	   first, which contains table headers): */
+	for (i = 1; i < (allRows.length - 1); i++) {
+	    // Start by saying there should be no switching:
+	    shouldSwitch = false;
+	    /* Get the two elements you want to compare,
+	       one from current row and one from the next: */
+	    x = allRows[i].getElementsByTagName("TD")[n];
+	    y = allRows[i + 1].getElementsByTagName("TD")[n];
+	    /* Check if the two rows should switch place,
+	       based on the direction, asc or desc: */
+	    if (dir == "asc") {
+		if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+		    // If so, mark as a switch and break the loop:
+		    shouldSwitch= true;
+		    break;
+		}
+	    } else if (dir == "desc") {
+		if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+		    // If so, mark as a switch and break the loop:
+		    shouldSwitch= true;
+		    break;
+		}
+	    }
+	}
+	if (shouldSwitch) {
+	    /* If a switch has been marked, make the switch
+	       and mark that a switch has been done: */
+	    allRows[i].parentNode.insertBefore(allRows[i + 1], allRows[i]);
+	    switching = true;
+	    // Each time a switch is done, increase this count by 1:
+	    switchcount ++; 
+	} else {
+	    /* If no switching has been done AND the direction is "asc",
+	       set the direction to "desc" and run the while loop again. */
+	    if (switchcount == 0 && dir == "asc") {
+		dir = "desc";
+		switching = true;
+	    }
+	}
+    }
+}
+
+var k;
+for(k = 0; k < 15; k++){
+    rows[0].getElementsByTagName("td")[k].addEventListener("click", function(){
+	    sortTable(k);
+	});
+}

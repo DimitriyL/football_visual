@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+    <title>Quarterback Statistics</title>
+
+    <style type="text/css">
+      table {
+        width: 20em;
+      }
+
+      /*#main td:nth-child(1){
+        background-color: #0c0;
+      }*/
+
+      tr:nth-child(1){
+      font-weight: bold;
+      }
+
+      .franchiseYes {
+        background-color: #0f0;
+      }
+
+      .franchiseNo {
+        background-color: #f00;
+      }
+
+      .franchiseProj {
+        background-color: #060;
+      }
+
+      .franchiseEarly {
+        background-color: #c00;
+      }
+
+      #myInput {
+      background-image: url('/css/searchicon.png'); /* Add a search icon to input */
+      background-position: 10px 12px; /* Position the search icon */
+      background-repeat: no-repeat; /* Do not repeat the icon image */
+      width: 100%; /* Full-width */
+      font-size: 16px; /* Increase font-size */
+      padding: 12px 20px 12px 40px; /* Add some padding */
+      border: 1px solid #ddd; /* Add a grey border */
+      margin-bottom: 12px; /* Add some space below the input */
+      }
+
+      #myTable {
+      border-collapse: collapse; /* Collapse borders */
+      width: 100%; /* Full-width */
+      border: 1px solid #ddd; /* Add a grey border */
+      font-size: 18px; /* Increase font-size */
+      }
+
+      #myTable th, #myTable td {
+      text-align: left; /* Left-align text */
+      padding: 12px; /* Add padding */
+      }
+
+      #myTable tr {
+      /* Add a bottom border to all table rows */
+      border-bottom: 1px solid #ddd;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+    <!--
+    <form action = "/filter" method="post">
+      Filter
+      Year: <input type = "text" name = "year"><br>
+      Round: <input type = "text" name = "round"><br>
+      College: <input type = "text" name = "college"><br>
+      Conference: <input type = "text" name = "conference"><br>
+      <input type = "submit">
+    </form>
+
+    <form action = "/score" method="post">
+      Scores
+      First: <input type = "text" name = "first"><br>
+      Last: <input type = "text" name = "last"><br>
+      Stat: <select name = "stat">
+	<option value = "Comp%">Comp%</option>
+	<option value = "Y/A">Y/A</option>
+	<option value = "TD:INT">TD:INT</option>
+      </select>
+      <input type = "submit">
+    </form>
+    <br><br>
+    
+
+    <br><br><br>
+    {{firstName}} {{lastName}}'s production score for {{statistic}}: <h1>{{prodScore}}</h1>-->
+    <form action = "/scoreBase" method="post">
+      <input type = "submit" value = "See Scores">
+    </form>
+
+    <form id="cardForm" action = "/scorecard" method="post">
+      <input type = "hidden" name = "first" value="Tom"><br>
+      <input type = "hidden" name = "last" value="Brady"><br>
+    </form>
+
+    <br>
+
+    <select id="filterSelect">
+      <option value="firstName">First Name</option>
+      <option value="lastName">Last Name</option>
+      <option value="year">Year</option>
+      <option value="round">Round</option>
+      <option value="conference">Conference</option>
+      <option value="college">College</option>
+    </select>
+
+    <br>
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.."><br>
+
+    <div class="table-responsive">
+      <table id="main" class="table table-hover table-striped table-sm" style="border:1px solid black;">
+	{% for row in data %}
+	<tr class="visible-rows" style="border:1px solid black">
+	  {% for item in row %}
+	  <td style="border:1px solid black"> {{ item }} </td>
+	  {% endfor %}
+	</tr>
+	{% endfor %}
+      </table>
+    </div>
+
+    <script src="static/scoreBase.js"> </script>
+    <script src="static/neatStats.js"> </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+  </body>
+</html>

@@ -1,0 +1,3 @@
+var header = document.getElementsByTagName("tr")[0];
+
+header.getElementsByTagName("td")[8].innerHTML = "Franchise QB";
